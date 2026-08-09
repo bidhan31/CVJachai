@@ -20,3 +20,6 @@ models/
 # OS
 .DS_Store
 Thumbs.db
+
+frontend/.env
+backend/.env
