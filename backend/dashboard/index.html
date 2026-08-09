@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CvJachai | Master Control Dashboard</title>
+    <meta name="description" content="CvJachai Master Control Panel — manage server state, users, jobs and applications in real time.">
+    <link rel="stylesheet" href="{{ STATIC_PUBLIC_URL }}style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Ambient background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- AUTH GATE — shown when not logged in -->
+    <div id="auth-gate" class="auth-gate hidden">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-layer-group"></i>
+                <span>CvJachai</span>
+            </div>
+            <h2>Master Control Panel</h2>
+            <p class="auth-sub">Sign in with your staff credentials to access the dashboard.</p>
+            <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Staff email" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login" id="login-btn">
+                    <i class="fas fa-right-to-bracket"></i> Sign In
+                </button>
+            </form>
+            <div id="auth-error" class="auth-error hidden"></div>
+        </div>
+    </div>
+
+    <!-- ACCESS DENIED — not staff -->
+    <div id="access-denied" class="auth-gate hidden">
+        <div class="auth-card">
+            <div class="auth-logo" style="color: var(--danger);">
+                <i class="fas fa-shield-xmark"></i>
+                <span>Access Denied</span>
+            </div>
+            <h2>Staff Only</h2>
+            <p class="auth-sub">This panel requires a staff-level account. Contact your administrator.</p>
+            <button class="btn-primary" onclick="doLogout()" id="denied-logout-btn">
+                <i class="fas fa-arrow-left"></i> Sign out
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div id="app-layout" class="layout hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="logo">
+                <i class="fas fa-layer-group"></i>
+                <span class="sl">CvJachai</span>
+            </div>
+
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-section="overview" id="nav-overview">
+                        <i class="fas fa-gauge-high"></i><span class="sl">Overview</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="users" id="nav-users">
+                        <i class="fas fa-users"></i><span class="sl">Users</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="jobs" id="nav-jobs">
+                        <i class="fas fa-briefcase"></i><span class="sl">Jobs</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="applications" id="nav-applications">
+                        <i class="fas fa-file-lines"></i><span class="sl">Applications</span>
+                    </a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user" id="sidebar-user-info">
+                    <div class="avatar-dot"></div>
+                    <div>
+                        <div class="su-name" id="sidebar-name">Loading...</div>
+                        <div class="su-role">Staff Administrator</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="doLogout()" id="logout-btn">
+                    <i class="fas fa-power-off"></i><span class="sl">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main id="main-content">
+
+            <!-- ═══════════════ OVERVIEW SECTION ═══════════════ -->
+            <section id="section-overview" class="page-section active">
+                <div class="page-header">
+                    <div>
+                        <h1>Master Control Panel</h1>
+                        <p class="page-sub">Real-time backend management — <span id="last-refresh-time">loading...</span></p>
+                    </div>
+                    <button class="btn-icon" id="refresh-btn" onclick="refreshAll()" title="Refresh all data">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </div>
+
+                <!-- ▶ SERVER TOGGLE CARD -->
+                <div class="master-control-card" id="master-control-card">
+                    <div class="mc-left">
+                        <div class="mc-indicator" id="mc-indicator">
+                            <span class="pulse-ring"></span>
+                            <span class="pulse-dot"></span>
+                        </div>
+                        <div class="mc-info">
+                            <div class="mc-label">API Connection</div>
+                            <div class="mc-status" id="mc-status-text">Checking...</div>
+                            <div class="mc-sub" id="mc-sub-text">Fetching server state...</div>
+                        </div>
+                    </div>
+                    <div class="mc-right">
+                        <label class="toggle-switch" id="server-toggle-wrap" title="Toggle API maintenance mode">
+                            <input type="checkbox" id="server-toggle" onchange="handleServerToggle(this)">
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                        <div class="toggle-label" id="toggle-label-text">—</div>
+                    </div>
+                </div>
+
+                <!-- Groq + latency row -->
+                <div class="mini-cards-row">
+                    <div class="mini-card" id="groq-status-card">
+                        <i class="fas fa-brain mini-icon"></i>
+                        <div>
+                            <div class="mini-label">Groq AI Engine</div>
+                            <div class="mini-value" id="groq-status-val">—</div>
+                            <div class="mini-sub" id="groq-model-val">—</div>
+                        </div>
+                    </div>
+                    <div class="mini-card" id="latency-card">
+                        <i class="fas fa-satellite-dish mini-icon"></i>
+                        <div>
+                            <div class="mini-label">API Latency</div>
+                            <div class="mini-value" id="latency-val">—</div>
+                            <div class="mini-sub">Last ping</div>
+                        </div>
+                    </div>
+                    <div class="mini-card">
+                        <i class="fas fa-clock mini-icon"></i>
+                        <div>
+                            <div class="mini-label">Last Toggle</div>
+                            <div class="mini-value" id="last-toggle-val">—</div>
+                            <div class="mini-sub">UTC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats grid -->
+                <div class="stats-grid">
+                    <div class="stat-card" id="stat-users">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-value" id="sv-users">—</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="stat-jobs">
+                        <div class="stat-icon" style="background:rgba(14,165,233,0.15);color:var(--secondary)"><i class="fas fa-briefcase"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-label">Total Jobs</div>
+                            <div class="stat-value" id="sv-jobs">—</div>
+                            <div class="stat-sub" id="sv-active-jobs"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="stat-apps">
+                        <div class="stat-icon" style="background:rgba(16,185,129,0.15);color:var(--success)"><i class="fas fa-file-lines"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-label">Applications</div>
+                            <div class="stat-value" id="sv-apps">—</div>
+                            <div class="stat-sub" id="sv-analyzed-apps"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="stat-analyzed">
+                        <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:var(--warning)"><i class="fas fa-sparkles"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-label">AI Analyzed</div>
+                            <div class="stat-value" id="sv-analyzed">—</div>
+                            <div class="stat-sub" id="sv-analyzed-pct"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ═══════════════ USERS SECTION ═══════════════ -->
+            <section id="section-users" class="page-section">
+                <div class="page-header">
+                    <div>
+                        <h1>User Management</h1>
+                        <p class="page-sub" id="users-count-sub">Loading users...</p>
+                    </div>
+                    <button class="btn-icon" onclick="loadUsers()" title="Refresh">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </div>
+
+                <!-- Create Staff User Form Card -->
+                <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text);">Create New Staff User</h3>
+                    <form id="create-staff-form" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;" onsubmit="handleCreateStaff(event)">
+                        <div class="input-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                            <i class="fas fa-user-plus" style="font-size: 0.95rem;"></i>
+                            <input type="email" id="staff-email" placeholder="Enter new staff email address" required autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn-primary" id="create-staff-btn" style="height: 42px;">
+                            <i class="fas fa-plus"></i> Create Staff Account
+                        </button>
+                    </form>
+                </div>
+
+                <div class="glass-card">
+                    <div class="table-wrap">
+                        <table id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Joined</th>
+                                    <th>Jobs Posted</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-tbody">
+                                <tr><td colspan="6" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════ JOBS SECTION ═══════════════ -->
+            <section id="section-jobs" class="page-section">
+                <div class="page-header">
+                    <div>
+                        <h1>Job Management</h1>
+                        <p class="page-sub" id="jobs-count-sub">Loading jobs...</p>
+                    </div>
+                    <button class="btn-icon" onclick="loadJobs()" title="Refresh">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </div>
+                <div class="glass-card">
+                    <div class="table-wrap">
+                        <table id="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Company</th>
+                                    <th>Posted By</th>
+                                    <th>Applications</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobs-tbody">
+                                <tr><td colspan="6" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════ APPLICATIONS SECTION ═══════════════ -->
+            <section id="section-applications" class="page-section">
+                <div class="page-header">
+                    <div>
+                        <h1>Applications</h1>
+                        <p class="page-sub" id="apps-count-sub">Loading applications...</p>
+                    </div>
+                    <button class="btn-icon" onclick="loadApplications()" title="Refresh">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </div>
+                <div class="glass-card">
+                    <div class="table-wrap">
+                        <table id="apps-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Job</th>
+                                    <th>Applied</th>
+                                    <th>Score</th>
+                                    <th>Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody id="apps-tbody">
+                                <tr><td colspan="5" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast-container"></div>
+
+    <!-- CONFIRM MODAL -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-icon" id="modal-icon"><i class="fas fa-triangle-exclamation"></i></div>
+            <h3 id="modal-title">Are you sure?</h3>
+            <p id="modal-body">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn-danger" id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ STATIC_PUBLIC_URL }}main.js"></script>
+</body>
+</html>

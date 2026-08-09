@@ -1,0 +1,315 @@
+/* Personalization Screen Styles */
+.personalization-screen {
+    padding-top: 40px;
+    min-height: 100vh;
+}
+
+.upload-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 40px;
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.file-preview {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-icon-circle {
+    width: 64px;
+    height: 64px;
+    background: rgba(34, 211, 238, 0.1);
+    color: var(--accent-cyan);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.change-file {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.mini-stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.mini-stat-card h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--gradient-secondary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+}
+
+.mini-stat-card p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Analysis Results Screen */
+.analysis-results-screen {
+    padding-top: 40px;
+    padding-bottom: 100px;
+}
+
+.analysis-score-card {
+    background: var(--gradient-primary);
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+}
+
+.score-display {
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #4f46e5;
+    flex-shrink: 0;
+}
+
+.score-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.score-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.score-info h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.score-info p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 24px;
+}
+
+.tag-row {
+    display: flex;
+    gap: 12px;
+}
+
+.status-tag {
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.analysis-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.icon-box {
+    width: 36px;
+    height: 36px;
+    background: rgba(34, 211, 238, 0.1);
+    color: var(--accent-cyan);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.job-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.job-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+}
+
+.job-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-cyan);
+}
+
+.job-rank {
+    width: 32px;
+    height: 32px;
+    background: var(--card-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+
+.job-info {
+    flex: 1;
+}
+
+.job-info h4 {
+    font-size: 1.05rem;
+    margin-bottom: 2px;
+}
+
+.job-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.job-match {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.improvement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.improvement-item {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.improvement-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.imp-icon {
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.imp-content h4 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.priority-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.prio-high { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.prio-med { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.prio-low { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+.imp-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Responsive Personalization Styles */
+@media (max-width: 768px) {
+    .stats-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .upload-box {
+        padding: 24px 16px;
+    }
+    .analysis-score-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 20px;
+        gap: 24px;
+    }
+    .tag-row {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .job-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 16px;
+    }
+    .improvement-item {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .imp-content h4 {
+        flex-wrap: wrap;
+    }
+    .analysis-section {
+        padding: 24px 16px;
+    }
+}

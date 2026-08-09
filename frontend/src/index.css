@@ -1,0 +1,12 @@
+@import './styles/base.css';
+@import './styles/layout.css';
+@import './styles/home.css';
+@import './styles/shortlisting.css';
+@import './styles/results.css';
+@import './styles/auth.css';
+@import './styles/personalization.css';
+
+/* Any remaining global styles or overrides can stay here */
+.app-container {
+    min-height: 100vh;
+}

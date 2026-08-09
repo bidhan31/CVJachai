@@ -1,0 +1,22 @@
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# Environments
+.env
+venv/
+env/
+ENV/
+
+# AI Models (Too large for Git)
+models/
+*.pkl
+*.pth
+*.h5
+
+# OS
+.DS_Store
+Thumbs.db
