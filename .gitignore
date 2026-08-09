@@ -2,3 +2,7 @@
 .env
 frontend/.env
 backend/.env
+
+.env
+frontend/.env
+backend/.env
