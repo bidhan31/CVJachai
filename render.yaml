@@ -3,6 +3,7 @@ services:
     name: cvjachai-api
     runtime: docker
     plan: free
+    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -13,10 +14,9 @@ services:
       - key: DEBUG
         value: "False"
       - key: API_KEY
-        sync: false # You will need to add your Groq API key in Render Dashboard
+        sync: false
       - key: PORT
         value: 8000
-    # The Dockerfile handles migration and starting the server
 
 databases:
   - name: cvjachai-db
