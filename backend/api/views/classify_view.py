@@ -186,6 +186,7 @@ class ResumeClassifyAPIView(APIView):
                     "email": cd['contact_info']['email'],
                     "phone": cd['contact_info']['phone'],
                     "resume_url": resume_url,
+                    "resume_text": cd['text'],
                     "match_score": round(final_score, 4),
                     "match_percentage": f"{round(final_score * 100, 1)}%",
                     "verdict": verdict,

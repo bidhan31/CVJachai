@@ -92,6 +92,7 @@ function App() {
               setAnalysisData(result);
               setView('results');
             }}
+            onError={() => setView('shortlisting')}
           />
         );
       case 'results':
@@ -112,6 +113,7 @@ function App() {
               setAnalysisData(result);
               setView('analysis_results');
             }}
+            onError={() => setView('personalization')}
           />
         );
       case 'analysis_results':

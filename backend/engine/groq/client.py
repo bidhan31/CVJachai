@@ -12,7 +12,7 @@ class GroqClient:
     """Base client for Groq API with auto-model discovery."""
     
     def __init__(self):
-        self.api_key = os.getenv("API_KEY")
+        self.api_key = os.getenv("GROQ_API_KEY") or os.getenv("API_KEY")
         self.client = None
         self.ranker_model = "llama-3.3-70b-versatile"           # Best on Groq
         self.optimizer_model = "llama-3.3-70b-versatile"         # Best on Groq

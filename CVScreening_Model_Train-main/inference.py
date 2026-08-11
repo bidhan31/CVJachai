@@ -17,7 +17,6 @@ import json
 import joblib
 from pathlib import Path
 from typing import List, Dict
-from sentence_transformers import SentenceTransformer
 
 from config import (
     MODEL_SAVE_DIR, TOP_K_RESULTS,
@@ -78,11 +77,15 @@ class ResumeScreeningEngine:
             from config import TECHNICAL_SKILLS, SOFT_SKILLS
             self.all_skills = TECHNICAL_SKILLS + SOFT_SKILLS
 
-        # Load SBERT model for semantic embeddings
-        print("Loading SBERT transformer model...")
-        self.sbert = SentenceTransformer(self.metadata.get("semantic_model", "all-MiniLM-L6-v2"))
+        # Load TF-IDF vectorizer
+        tfidf_path = model_dir / "tfidf_vectorizer.pkl"
+        if not tfidf_path.exists():
+            raise FileNotFoundError(
+                f"Missing TF-IDF artifact: {tfidf_path}. Run train.py after create_dataset.py."
+            )
+        self.tfidf_vectorizer = joblib.load(tfidf_path)
 
-        print(f"ATS Engine loaded: {self.metadata['best_model']}")
+        print(f"ATS Engine loaded: {self.metadata.get('best_model', 'Unknown')}")
         print(f"  CV Accuracy: {self.metadata['cv_accuracy']*100:.1f}%")
         print(f"  Categories:  {self.categories}")
 
@@ -93,28 +96,25 @@ class ResumeScreeningEngine:
     def _build_feature_vector(self, resume_text: str) -> tuple:
         features = self.extractor.extract_all(resume_text)
 
-        skill_vector = []
-        all_found_skills = features["technical_skills"] + features["soft_skills"]
-        for skill in self.all_skills:
-            skill_vector.append(1.0 if skill in all_found_skills else 0.0)
+        # 1. TF-IDF
+        tfidf_vec = self.tfidf_vectorizer.transform([resume_text]).toarray()
 
-        # Numeric features — MUST match exact order in create_dataset.py skill_columns
-        skill_vector.append(float(features["years_of_experience"]))
-        skill_vector.append(float(features["education_score"]))
-        skill_vector.append(float(features["num_certifications"]))
-        skill_vector.append(float(features["num_sections"]))
-        skill_vector.append(float(features.get("seniority_score", 0)))
-        skill_vector.append(float(features.get("resume_quality_score", 0)))
-        skill_vector.append(float(features.get("num_employment_gaps", 0)))
-        skill_vector.append(float(features.get("total_gap_months", 0)))
-        skill_vector.append(float(features.get("num_red_flags", 0)))
-
+        # 2. Binary skills
+        text_lower = resume_text.lower()
+        skill_vector = [1.0 if s.lower() in text_lower else 0.0 for s in self.all_skills]
         skill_array = np.array([skill_vector], dtype=np.float32)
-        
-        # Get semantic embeddings from SBERT
-        semantic_vector = self.sbert.encode([resume_text], convert_to_numpy=True)
-        
-        combined = np.hstack([skill_array, semantic_vector])
+
+        # 3. Text statistics
+        words = resume_text.split()
+        word_count = len(words) if words else 1
+        extra = np.array([[
+            len(resume_text),                                    # char_count
+            word_count,                                          # word_count
+            np.mean([len(w) for w in words]) if words else 0,    # avg_word_len
+            len(set(words)) / word_count,                        # unique_word_ratio
+        ]], dtype=np.float32)
+
+        combined = np.hstack([tfidf_vec, skill_array, extra])
         combined_scaled = self.scaler.transform(combined)
 
         return combined_scaled, features

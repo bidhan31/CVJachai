@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, FileText, Upload } from 'lucide-react';
 import { resumeApi } from '../../api';
 
-function Optimization({ onBack, onAnalyze, onStartAnalysis, token }) {
+function Optimization({ onBack, onAnalyze, onStartAnalysis, token, onError }) {
   const [formData, setFormData] = useState({
     job_description: '',
     resume_file: null
@@ -33,11 +33,17 @@ function Optimization({ onBack, onAnalyze, onStartAnalysis, token }) {
       data.append("job_description", formData.job_description || "");
 
       const result = await resumeApi.optimize(data, token);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
       console.log('Optimization Result:', result);
       onAnalyze(result);
     } catch (error) {
       console.error('Optimization failed:', error);
       alert('Optimization failed: ' + error.message);
+      if (onError) onError();
     } finally {
       setIsAnalyzing(false);
     }

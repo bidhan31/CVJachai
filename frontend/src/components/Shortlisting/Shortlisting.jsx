@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, Upload } from 'lucide-react';
 import { resumeApi } from '../../api';
 
-function Shortlisting({ onBack, onAnalyze, token, onStartAnalysis }) {
+function Shortlisting({ onBack, onAnalyze, token, onStartAnalysis, onError }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [formData, setFormData] = useState({
     job_circular: '',
@@ -41,11 +41,17 @@ function Shortlisting({ onBack, onAnalyze, token, onStartAnalysis }) {
       data.append("min_experience", formData.min_experience || "0");
 
       const result = await resumeApi.classify(data, token);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
       console.log('Analysis Result:', result);
       onAnalyze(result);
     } catch (error) {
       console.error('Analysis failed:', error);
       alert('Analysis failed: ' + error.message);
+      if (onError) onError();
     } finally {
       setIsAnalyzing(false);
     }
