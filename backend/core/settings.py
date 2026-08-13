@@ -173,6 +173,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
     "https://cvjachai.online",
     "https://www.cvjachai.online",
+    "https://cvjachai-api-5heb.onrender.com",
 ]
 
 # Also allow any origin in debug mode (for local dev / Vercel preview deployments)
