@@ -168,10 +168,13 @@ else:
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
-    "https://cvjacai.vercel.app",
+    "https://cv-jachai.vercel.app",
     "http://localhost:5173",
     "http://localhost:5174",
     "https://cvjachai.online",
     "https://www.cvjachai.online",
 ]
+
+# Also allow any origin in debug mode (for local dev / Vercel preview deployments)
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 

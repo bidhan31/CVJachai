@@ -13,7 +13,11 @@ services:
         generateValue: true
       - key: DEBUG
         value: "False"
-      - key: API_KEY
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GROQ_API_KEY
         sync: false
       - key: PORT
         value: 8000
